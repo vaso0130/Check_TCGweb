@@ -50,28 +50,8 @@
 ## 5. 配置與部署 (Config & Deployment)
 
 - **網站清單**：`config/websites.csv`，格式：`URL, name`
-- **API 金鑰**：環境變數 `OPENAI_API_KEY` 或 `GEMINI_API_KEY`
+- **API 金鑰**：環境變數  `GEMINI_API_KEY`
 - **報表目錄**：`output/`
-
-```yaml
-# docker-compose.yml 範例
-version: '3.8'
-services:
-  crawler:
-    build: ./crawler
-    volumes:
-      - ./config:/app/config
-    environment:
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
-  analyzer:
-    build: ./analyzer
-    environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-  reporter:
-    build: ./reporter
-    volumes:
-      - ./output:/app/output
-```
 
 ## 6. 預期輸出範例 (Expected Output)
 
@@ -79,4 +59,3 @@ services:
 | ------------ | ----- | ---------- | ---- | -------- |
 | a.gov.taiepi | ✅ 正常  | 2025/01/01 | 10   | 近期公告更新   |
 | b.org.taiepi | ⚠️ 疑似 | 2020/05/12 | 95   | 多處陳舊疫情訊息 |
-
