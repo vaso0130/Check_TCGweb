@@ -12,3 +12,5 @@ common/__pycache__/data_structures.cpython-312.pyc
 output/website_analysis.db
 
 common/__pycache__/data_structures.cpython-312.pyc
+*.pyc
+*__pycache__
