@@ -18,7 +18,7 @@ from reporter.report_generation import ReportGenerationAgent
 from common.data_structures import AnalysisResult
 
 # --- Configuration ---
-CONCURRENT_TASKS = 1
+CONCURRENT_TASKS = 5
 
 
 def load_websites(path: str):
