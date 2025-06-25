@@ -22,7 +22,7 @@
   - 過時標記與原因說明
 - **輸入**：WebCrawlerAgent 輸出之內容
 - **輸出**：結構化分析結果
-- **技術棧**：OpenAI GPT-4 或 Gemini 1.5 Pro API
+- **技術棧**：LLM API
 
 ### 2.3 ReportGenerationAgent
 

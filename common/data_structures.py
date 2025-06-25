@@ -24,3 +24,4 @@ class AnalysisResult:
     score: int  # 0-100 的過時分數
     notes: str
     broken_links_summary: str # 整理後的失效連結字串
+    detected_libraries_summary: str # 新增：整理後的偵測到的函式庫字串

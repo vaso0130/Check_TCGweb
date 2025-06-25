@@ -6,3 +6,8 @@ crawler/__pycache__/__init__.cpython-312.pyc
 analyzer/__pycache__/__init__.cpython-312.pyc
 analyzer/__pycache__/content_analysis.cpython-312.pyc
 *.xlsx
+common/__pycache__/data_structures.cpython-312.pyc
+database/__pycache__/db_handler.cpython-312.pyc
+common/__pycache__/data_structures.cpython-312.pyc
+output/website_analysis.db
+
