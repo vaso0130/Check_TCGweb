@@ -173,6 +173,10 @@ async def check_link_with_playwright(browser: Browser, url: str) -> Optional[Dic
         # 捕捉其他所有 Playwright 請求錯誤，並簡化錯誤訊息
         full_error_message = str(e)
         
+        # 新增：將 net::ERR_ABORTED 視為檔案下載，而非錯誤
+        if "net::ERR_ABORTED" in full_error_message:
+            return {"url": url, "status_code": "Download", "error_message": "檔案下載 (net::ERR_ABORTED)"}
+
         if "net::ERR_NAME_NOT_RESOLVED" in full_error_message or "ENOTFOUND" in full_error_message:
             status_code = "DNS Error"
             simple_error_message = "DNS 查無此域名"

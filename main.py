@@ -74,32 +74,48 @@ async def main():
 
     websites = load_websites("config/websites.csv")
 
-    # 初始化 Agents (不再需要 crawler agent)
+    # 初始化 Agents
     analyzer = ContentAnalysisAgent()
     reporter = ReportGenerationAgent()
     
     semaphore = asyncio.Semaphore(CONCURRENT_TASKS)
+    all_results = []
+    BATCH_SIZE = 50 # 每 50 個網站檢查一次瀏覽器狀態
 
     async with async_playwright() as p:
+        # 啟動瀏覽器
         browser = await p.chromium.launch(headless=True)
         
-        tasks = [
-            process_website(url, name, analyzer, semaphore, browser)
-            for url, name in websites
-        ]
+        for i in range(0, len(websites), BATCH_SIZE):
+            # 在每個批次開始前，檢查瀏覽器連線狀態
+            if not browser.is_connected():
+                print("\n--- 偵測到瀏覽器連線中斷，正在重啟... ---")
+                try:
+                    await browser.close()
+                except Exception:
+                    pass # 忽略關閉失敗的錯誤，因為它可能已經崩潰了
+                browser = await p.chromium.launch(headless=True)
 
-        print(f"開始分析 {len(tasks)} 個網站 (並行數量: {CONCURRENT_TASKS})...")
-        
-        # 使用 tqdm 顯示進度條並執行所有任務
-        results = await tqdm_asyncio.gather(*tasks)
+            batch_websites = websites[i:i + BATCH_SIZE]
+            tasks = [
+                process_website(url, name, analyzer, semaphore, browser)
+                for url, name in batch_websites
+            ]
 
-        # 優雅地關閉瀏覽器，忽略在關閉時可能發生的連線錯誤
-        try:
-            await browser.close()
-        except Exception as e:
-            print(f"\n關閉瀏覽器時發生非嚴重錯誤 (可忽略): {e}")
+            print(f"--- 開始分析批次 {i//BATCH_SIZE + 1}/{len(websites)//BATCH_SIZE + 1} (共 {len(batch_websites)} 個網站) ---")
+            
+            # 使用 tqdm 顯示進度條並執行當前批次的任務
+            batch_results = await tqdm_asyncio.gather(*tasks)
+            all_results.extend(batch_results)
+
+        # 確保最後的瀏覽器實例被關閉
+        if browser.is_connected():
+            try:
+                await browser.close()
+            except Exception as e:
+                print(f"\n關閉瀏覽器時發生非嚴重錯誤 (可忽略): {e}")
     
-    valid_results = [res for res in results if res is not None]
+    valid_results = [res for res in all_results if res is not None]
 
     print(f"\n分析完成，共取得 {len(valid_results)} 筆結果。正在產生報告...")
     output_path = reporter.generate(valid_results)
